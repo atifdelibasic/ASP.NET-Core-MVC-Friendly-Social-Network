@@ -1,0 +1,26 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+    .search-section {
+        width: 100%;
+    }
+</style>
+<section class="p-lg-4 p-2 border search-section bg-light">
+    <div class="d-flex align-items-center flex-lg-row flex-column mb-3">
+        <div class="d-flex align-items-center">
+            <h5 class="m-0 pb-2">Connections</h5>
+            <i class="fas fa-user-friends fa-1x text-secondary px-2"></i>
+        </div>
+        <div>
+            <div class="input-group">
+                <div class="input-group-append">
+                    <input onchange="SearchConnections(document.getElementById('searchString').value)" name="searchString" type="text" class="form-control" placeholder="Search connections" id="searchString">
+                    <button class="btn btn-dark">Search</button>
+                    @*<input onclick="SearchConnections(document.getElementById('searchString').value)" type="button" class="input-group-text" value="Search" />*@
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

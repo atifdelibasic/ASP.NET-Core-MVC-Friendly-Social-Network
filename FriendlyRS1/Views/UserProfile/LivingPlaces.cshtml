@@ -1,0 +1,37 @@
+﻿@model UserDetailsVM
+@{
+    Layout = null;
+}
+<div class="d-flex align-items-center">
+
+    <i class="fas fa-map-marker-alt fa-lg text-info pr-2"></i><span class="text-info">LIVING PLACES</span>
+</div>
+<hr />
+<div class="px-1">
+    <div>
+        <p class="m-0">Country</p>
+        <small class="text-danger">@(Model.CountryName!= null?@Model.CountryName:"No home country.")</small>
+
+
+    </div>
+    <hr />
+    <div>
+        <p class="m-0">City</p>
+        <small class="text-danger">@(Model.CityName!= null?@Model.CityName:"No home city.")</small>
+    </div>
+    <hr />
+
+    @if (@TempData["edited"] != null)
+    {
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <strong>@TempData["edited"]</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    @if (Model.Me == true)
+    {
+        <button onclick="EditProfileData(@Model.UserId)" class="btn btn-info">Edit Home Details</button>
+    }
+</div>

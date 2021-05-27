@@ -1,0 +1,67 @@
+﻿@model List<NotificationVM>
+@{
+    Layout = null;
+    var readNotifications = ViewData["read_notif_count"];
+}
+
+<style>
+    .msg-wrapper {
+        font-size: 15px;
+    }
+
+    .messagge {
+        line-height: 1.2em;
+    }
+
+    .time {
+        font-size: 12px;
+    }
+
+    .notif-img {
+        height: 56px;
+        width: 56px;
+        background-size: cover;
+        background-position: center;
+    }
+    a{
+        color: unset;   
+    }
+</style>
+
+
+@foreach (var notification in Model)
+{
+    <div>
+        <a class="d-flex align-items-center py-2 not" asp-controller="UserProfile" asp-action="Index" asp-route-id="@notification.ActorId">
+            @*<span class="time">@notification.DateCreated.ToString("HH:mm")</span>*@
+
+            @if (notification.ProfileImage != null)
+            {
+                <img src="data:image/*;base64,@(Convert.ToBase64String(notification.ProfileImage))" class="rounded-circle border-dark notif-img">
+            }
+            else
+            {
+                <img src="/avatar.png" class="rounded-circle border-dark notif-img">
+            }
+
+            <div class="d-flex flex-column pl-2">
+                <div class="messagge">
+                    <span class="font-weight-bold">@notification.Actor</span>
+                    <span>@notification.NotificationMessage</span>
+                </div>
+                <div class="pt-1 time">
+                    <time class="timeago date" datetime="@notification.DateCreated">
+                    </time>
+                </div>
+            </div>
+        </a>
+    </div>
+}
+
+<script>
+
+    $(function () {
+        // Initialize timeago on all the <time>
+        $("time.timeago").timeago();
+    });
+</script>

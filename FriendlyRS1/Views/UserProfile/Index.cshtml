@@ -1,0 +1,863 @@
+﻿@model FriendlyRS1.ViewModels.UserDetailsVM
+
+@{
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+    string ImageError = TempData["ImageError"] as string;
+}
+<style>
+    html {
+        overflow-y: scroll;
+    }
+
+    .location-icons {
+        display: none !important;
+    }
+
+    .profileImage {
+        cursor: pointer;
+    }
+
+        .profileImage:hover {
+            opacity: 0.8;
+        }
+
+    .container-change-profile-image {
+        position: absolute;
+        left: 600px;
+        top: 200px;
+        background-color: darkslategrey;
+        width: 430px;
+        height: 250px;
+        display: none;
+        border-radius: 10px 10px;
+        transition: all 2s ease;
+        z-index: 1;
+    }
+
+    .container-view-profile-picture {
+        position: absolute;
+        left: 520px;
+        top: 150px;
+        display: none;
+        z-index: 2;
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .custom-file-upload {
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .view-profile-picture {
+        width: 500px;
+        height: 500px;
+        z-index: 10;
+    }
+
+    .icon:hover {
+        cursor: pointer;
+    }
+
+    .li-item {
+        transition: all .1s ease-in-out;
+        border-bottom: 3px solid #fff;
+    }
+
+        .li-item:hover {
+            cursor: pointer;
+            border-bottom: 3px solid gray;
+        }
+
+    .basic-info {
+        font-size: .85rem;
+    }
+
+    @@media only screen and (max-width: 600px) {
+
+        .icons-responsive {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<style>
+    body {
+        background: #eee;
+    }
+
+        body.modal-open {
+            overflow: visible;
+        }
+
+    .profile-header {
+        position: relative;
+    }
+
+        .profile-header .profile-header-cover {
+            background-image: url(https://bootdey.com/img/Content/bg1.jpg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0
+        }
+
+            .profile-header .profile-header-cover:before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .75) 100%)
+            }
+
+        .profile-header .profile-header-content {
+            color: #fff;
+            padding: 25px
+        }
+
+    .profile-header-img {
+        float: left;
+        width: 120px;
+        height: 120px;
+        overflow: hidden;
+        position: relative;
+        z-index: 10;
+        margin: 0 0 -20px;
+        padding: 3px;
+        border-radius: 4px;
+        background: #fff;
+        transition: .1s ease-in-out;
+    }
+
+        .profile-header-img:hover {
+            cursor: pointer;
+            opacity: .8;
+        }
+
+        .profile-header-img img {
+            max-width: 100%
+        }
+
+    .profile-header-info h4 {
+        font-weight: 500;
+        color: #fff
+    }
+
+    .profile-header-img + .profile-header-info {
+        margin-left: 140px
+    }
+
+    .profile-header .profile-header-content,
+    .profile-header .profile-header-tab {
+        position: relative
+    }
+
+
+    .profile-header .profile-header-tab {
+        background: #fff;
+        list-style-type: none;
+        padding: 0 0 0 140px;
+        white-space: nowrap;
+        border-radius: 0
+    }
+
+    .text-ellipsis,
+    .text-nowrap {
+        white-space: nowrap !important;
+    }
+
+    .profile-header .profile-header-tab > li {
+        display: inline-block;
+        margin: 0
+    }
+
+        .profile-header .profile-header-tab > li > a {
+            display: block;
+            color: #929ba1;
+            line-height: 20px;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 12px;
+            border: none
+        }
+
+            .profile-header .profile-header-tab > li.active > a,
+            .profile-header .profile-header-tab > li > a.active {
+                color: #242a30
+            }
+
+    .profile-content .tab-content,
+    .profile-content .tab-pane {
+        background: 0 0
+    }
+
+    .profile-left {
+        width: 200px;
+        float: left
+    }
+
+    .profile-right {
+        margin-left: 240px;
+        padding-right: 20px
+    }
+
+    .profile-image {
+        height: 175px;
+        line-height: 175px;
+        text-align: center;
+        font-size: 72px;
+        margin-bottom: 10px;
+        border: 2px solid #E2E7EB;
+        overflow: hidden;
+        border-radius: 4px
+    }
+
+        .profile-image img {
+            display: block;
+            max-width: 100%
+        }
+
+    .profile-highlight {
+        padding: 12px 15px;
+        background: #FEFDE1;
+        border-radius: 4px
+    }
+
+        .profile-highlight h4 {
+            margin: 0 0 7px;
+            font-size: 12px;
+            font-weight: 700
+        }
+
+    .table.table-profile > thead > tr > th {
+        border-bottom: none !important
+    }
+
+        .table.table-profile > thead > tr > th h4 {
+            font-size: 20px;
+            margin-top: 0
+        }
+
+            .table.table-profile > thead > tr > th h4 small {
+                display: block;
+                font-size: 12px;
+                font-weight: 400;
+                margin-top: 5px
+            }
+
+    .table.table-profile > tbody > tr > td,
+    .table.table-profile > thead > tr > th {
+        border: none;
+        padding-top: 7px;
+        padding-bottom: 7px;
+        color: #242a30;
+        background: 0 0
+    }
+
+        .table.table-profile > tbody > tr > td.field {
+            width: 20%;
+            text-align: right;
+            font-weight: 600;
+            color: #2d353c
+        }
+
+    .table.table-profile > tbody > tr.highlight > td {
+        border-top: 1px solid #b9c3ca;
+        border-bottom: 1px solid #b9c3ca
+    }
+
+    .table.table-profile > tbody > tr.divider > td {
+        padding: 0 !important;
+        height: 10px
+    }
+
+    .profile-section + .profile-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #b9c3ca
+    }
+
+    .profile-section:after,
+    .profile-section:before {
+        content: '';
+        display: table;
+        clear: both
+    }
+
+    .profile-section .title {
+        font-size: 20px;
+        margin: 0 0 15px
+    }
+
+        .profile-section .title small {
+            font-weight: 400
+        }
+
+
+    .bg-white {
+        background-color: #fff !important;
+    }
+
+    .p-10 {
+        padding: 10px !important;
+    }
+
+    .media.media-xs .media-object {
+        width: 32px;
+    }
+
+    .m-b-2 {
+        margin-bottom: 2px !important;
+    }
+
+    .media > .media-left, .media > .pull-left {
+        padding-right: 15px;
+    }
+
+    .media-body, .media-left, .media-right {
+        display: table-cell;
+        vertical-align: top;
+    }
+
+    select.form-control:not([size]):not([multiple]) {
+        height: 34px;
+    }
+
+    .form-control.input-inline {
+        display: inline;
+        width: auto;
+        padding: 0 7px;
+    }
+
+
+    .timeline {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+
+        .timeline:before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            bottom: 5px;
+            width: 5px;
+            background: #2d353c;
+            left: 20%;
+            margin-left: -2.5px;
+        }
+
+        .timeline > li {
+            position: relative;
+            min-height: 50px;
+            padding: 20px 0
+        }
+
+        .timeline .timeline-time {
+            position: absolute;
+            left: 0;
+            width: 18%;
+            text-align: right;
+            top: 30px
+        }
+
+            .timeline .timeline-time .date,
+            .timeline .timeline-time .time {
+                display: block;
+                font-weight: 600
+            }
+
+            .timeline .timeline-time .date {
+                line-height: 16px;
+                font-size: 12px
+            }
+
+            .timeline .timeline-time .time {
+                line-height: 24px;
+                font-size: 20px;
+                color: #242a30
+            }
+
+        .timeline .timeline-icon {
+            left: 15%;
+            position: absolute;
+            width: 10%;
+            text-align: center;
+            top: 40px
+        }
+
+            .timeline .timeline-icon a {
+                text-decoration: none;
+                width: 20px;
+                height: 20px;
+                display: inline-block;
+                border-radius: 20px;
+                background: #d9e0e7;
+                line-height: 10px;
+                color: #fff;
+                font-size: 14px;
+                border: 5px solid #2d353c;
+                transition: border-color .2s linear
+            }
+
+        .timeline .timeline-body {
+            margin-left: 23%;
+            margin-right: 17%;
+            background: #fff;
+            position: relative;
+            padding: 20px 25px;
+            border-radius: 6px
+        }
+
+            .timeline .timeline-body:before {
+                content: '';
+                display: block;
+                position: absolute;
+                border: 10px solid transparent;
+                border-right-color: #fff;
+                left: -20px;
+                top: 20px
+            }
+
+            .timeline .timeline-body > div + div {
+                margin-top: 15px
+            }
+
+                .timeline .timeline-body > div + div:last-child {
+                    margin-bottom: -20px;
+                    padding-bottom: 20px;
+                    border-radius: 0 0 6px 6px
+                }
+
+    .timeline-header {
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e2e7eb;
+        line-height: 30px
+    }
+
+        .timeline-header .userimage {
+            float: left;
+            width: 34px;
+            height: 34px;
+            border-radius: 40px;
+            overflow: hidden;
+            margin: -2px 10px -2px 0
+        }
+
+        .timeline-header .username {
+            font-size: 16px;
+            font-weight: 600
+        }
+
+            .timeline-header .username,
+            .timeline-header .username a {
+                color: #2d353c
+            }
+
+    .timeline-content {
+        letter-spacing: .25px;
+        line-height: 18px;
+        font-size: 13px
+    }
+
+        .timeline-content:after,
+        .timeline-content:before {
+            content: '';
+            display: table;
+            clear: both
+        }
+
+    .timeline-title {
+        margin-top: 0
+    }
+
+
+    .lead {
+        margin-bottom: 20px;
+        font-size: 21px;
+        font-weight: 300;
+        line-height: 1.4;
+    }
+
+    .text-danger, .text-red {
+        color: #ff5b57 !important;
+    }
+</style>
+
+
+<div class="container profile-wrapper mt-lg-0 mt-5">
+    <div class="container-change-profile-image p-2">
+        <div id="ChangeProfileImage" class="d-flex justify-content-between align-items-center flex-column rounded w-100 h-100">
+            <div class="w-100 p-2 text-right">
+                <a href="#" onclick="HideBox(true)" class="fas fa-times-circle fa-2x text-info "></a>
+            </div>
+            <div class="mb-2 w-100">
+                <div class="d-flex flex-column justify-content-around p-2 " style="width:100%; height:130px;">
+                    <input class="btn btn-light pt-2 pb-2" onclick="ViewProfilePicture()" type="button" value="View profile picture" />
+                    <form asp-action="AddImage" asp-controller="UserProfile" enctype="multipart/form-data" method="post" class="d-flex">
+                        <div class="btn btn-light w-50 p-1 py-1">
+                            <label for="file-upload" class="custom-file-upload m-0">
+                                <i class="fa fa-cloud-upload"></i> Change profile picture
+                            </label>
+                            <input id="file-upload" type="file" name="Image" />
+                        </div>
+                        <button type="submit" class="btn btn-info w-50 p-1 py-1 ml-1">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-view-profile-picture">
+        <a onclick="HideViewImage()" class="fas fa-times-circle fa-2x text-danger bg-light close-image" style="position:absolute; left:93%; top:1%; cursor:pointer;"></a>
+        @if (Model.ProfileImage != null)
+        {
+            <img class="view-profile-picture" src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfileImage))" alt="Alternate Text" />
+        }
+    </div>
+
+    <div class="">
+        <div class="main-wrapper" style="z-index:10">
+            <div id="content" @*class="@*content content-full-width*@>
+                <!-- begin profile -->
+                <div class="profile">
+                    <div class="profile-header">
+                        <div class="profile-header-cover"></div>
+                        <div class="profile-header-content">
+                            <div class="profile-header-img">
+                                @if (Model.ProfileImage != null)
+                                {
+                                    <img onclick="ShowBox()" src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfileImage))">
+                                }
+                                else
+                                {
+                                    <img onclick="ShowBox()" src="/avatar.png">
+                                }
+                            </div>
+                            <div class="profile-header-info">
+                                <h4 class="m-t-10 m-b-5">@Model.ToString()</h4>
+                                <p class="m-b-10">@(Model.About == null? "No info":Model.About)</p>
+                                <div class="d-flex justify-content-center justify-content-lg-start">
+                                    <div class="d-flex align-items-center mr-2 profile-buttons justify-content-center">
+                                        @if (Model.Me == true)
+                                        {
+                                            <a class="btn btn-outline-light mr-2" asp-action="EditUserDetails" asp-route-id="@Model.UserId">Edit profile <i class="far fa-edit"></i></a>
+                                        }
+                                        <input onclick="LoadConnections()" type="button" value="@Model.ConnectionsCount Connections" class="btn btn-info " />
+                                    </div>
+
+                                    @if (Model.Me == false)
+                                    {
+                                        <div style="position:relative" id="@Model.UserId">
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="profile-header-tab nav nav-tabs" style="bottom: 0px">
+                            <li class="nav-item"><a href="#profile-post" class="nav-link active show" data-toggle="tab" onclick="LoadPosts()">POSTS</a></li>
+                            <li class="nav-item"><a href="#profile-friends" class="nav-link" data-toggle="tab" onclick="EditHobbies()">HOBBIES & INTERESTS</a></li>
+                            <li class="nav-item"><a href="#profile-about" class="nav-link" data-toggle="tab" onclick="ShowDefault()">ABOUT</a></li>
+                            <li class="nav-item"><a href="#profile-friends" class="nav-link" data-toggle="tab" onclick="LoadConnections()">CONNECTIONS</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="display: block" id="partialAddPost">
+                    @if (Model.Me)
+                    {
+                        <div>
+                            <partial name="_CreatePost" model="Model" style="display:none">
+                        </div>
+                    }
+                </div>
+                <section style="display: none" class="searchConnections">
+                </section>
+                <div class="profile-content" id="profile-content">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="notifications" class="notification"></div>
+
+<input type="hidden" id="signalRConnectionId" />
+
+
+@if (Model.Me == false)
+{
+    <script>
+            window.addEventListener('load', () => {
+
+            var url = "/UserProfile/FriendConnect/" + @Model.UserId;
+
+           document.getElementById(@Model.UserId).innerHTML = loaderSmall;
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function (data) {
+                    $("#" + @Model.UserId).html(data);
+                }
+            })
+       });
+    </script>
+}
+
+
+<script>
+
+    let infinityScroll;
+    let profileContent = $(".profile-content");
+    let partial = document.getElementById("partialAddPost");
+    let searchConnections = document.querySelector(".searchConnections");
+
+    window.addEventListener("load", function () {
+        LoadPosts();
+    });
+
+    function LoadPosts() {
+        profileContent.html("");
+        partial.style.display = "block";
+        searchConnections.style.display = "none";
+        profileContent.removeClass("d-flex justify-content-between flex-wrap  py-3");
+
+        infinityScroll = new InfinitiySroll("profile-content", "/Feed/GetMyPosts/" + @Model.UserId, {}, "profile-content", true);
+    }
+
+
+    function LoadConnections() {
+        let url = '/UserProfile/GetConnections/' + @Model.UserId;
+        let url2 = '/UserProfile/SearchConnections/';
+        let search = $(".searchConnections");
+        search.show();
+        partial.style.display = "none";
+        searchConnections.style.display = "block";
+        $(".profile-content").html(loader);
+
+        profileContent.addClass("d-flex justify-content-between flex-wrap  py-3");
+
+            infinityScroll = new InfinitiySroll("profile-content", url, {id: @Model.UserId, searchString: null }, "profile-content", true);
+        $.get(url2, function (res) {
+            $(".searchConnections").html(res);
+        });
+
+    }
+
+
+    $().alert('close');
+
+    // spinning loader
+    var loader = `<div class="d-flex justify-content-center">
+                  <div class="spinner-border" role="status">
+                  <span class="sr-only">Loading...</span>
+                 </div>
+                 </div>`;
+
+
+    var userId = @Model.LoggedUserId;
+
+    function ShowDefault() {
+        // remove previous scroll events
+        infinityScroll.Update(null, null);
+        searchConnections.style.display = "none";
+        partial.style.display = "none";
+        profileContent.removeClass("d-flex justify-content-between flex-wrap  py-3");
+
+        GetMenu();
+        PersonalInfo();
+    }
+
+    function  GetMenu() {
+        let url = '/UserProfile/GetUser/' + @Model.UserId + '?id2=' + @Model.LoggedUserId;
+        // add loader to the screen
+        $(".profile-content").html(loader);
+
+        $.get(url, function (d) {
+            $(".profile-content").html(d);
+        });
+    }
+
+    function SearchConnections(search) {
+        let url = '/UserProfile/GetConnections/' + @Model.UserId + '?&searchString=' + search;
+        //$(".profile-content").append("Searching.." + loader);
+        $('.profile-content .con').remove();
+
+        infinityScroll = new InfinitiySroll("profile-content", url, {id: @Model.UserId, searchString: search }, "profile-content", true);
+    }
+
+    function GetData(country, postalCode, result) {
+        result.value = "";
+        if (postalCode.value.toString().length != 5) return;
+
+        var countryName = country.options[country.selectedIndex].text;
+        var split = countryName.split(" - ");
+        var countryTwoAlpha = split.length > 0 ? split[1] : 'error';
+
+        var url = "https://app.zipcodebase.com/api/v1/search?apikey=99f99e60-336e-11eb-b2ab-f9402815fece&codes=" + postalCode.value + "&country=" + countryTwoAlpha;
+        fetch(url)
+            .then(response => {
+                console.log(response);
+                return response.json();
+            })
+            .then(response => {
+                var res = response.results[postalCode.value];
+                console.log(res);
+
+                result.value = res[0].city;
+            })
+            .catch(err => {
+                console.log("Something went wrong");
+            });
+    }
+
+    function EditProfileData(id) {
+        var url = "/UserProfile/EditCity?id=" + id;
+        $.get(url, function (d) {
+            $(".profile-content").html(d);
+        });
+    }
+
+    function ContactInfo() {
+        var url = '/UserProfile/ContactInfo/' + @Model.UserId;
+
+        $.get(url, function (d) {
+            $("#information").html(d);
+        });
+        console.log("Teeest");
+    }
+
+    function LivingPlaces() {
+        var url = '/UserProfile/LivingPlaces/ '+ @Model.UserId;
+        $.get(url, function (d) {
+            $("#information").html(d);
+        });
+    }
+
+    function Home() {
+        GetMenu();
+        LivingPlaces();
+    }
+
+    function PersonalInfo() {
+        var url = '/UserProfile/PersonalInfo/' + @Model.UserId;
+
+        $.get(url, function (d) {
+            $("#information").html(d);
+        });
+    }
+
+
+    function Submit() {
+
+        var form = $("#CityForm");
+
+        var url = "/UserProfile/EditCity";
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: form.serialize(),
+            success: function () {
+                GetMenu();
+                LivingPlaces();
+            }
+        })
+    }
+
+    function ChangeName(input) {
+        input.value = "";
+    }
+
+    function EditHobbies() {
+        partial.style.display = "none";
+        searchConnections.style.display = "none";
+        infinityScroll.Update(null, null);
+        const Http = new XMLHttpRequest();
+
+        const url = '/UserProfile/DisplayHobbies';
+        Http.open("GET", url);
+        Http.send();
+
+        if (@Model.Me.ToString().ToLower() == true) {
+            Http.onreadystatechange = () => {
+                $(".profile-content").html(Http.responseText);
+            }
+        } else {
+            //list of user hobbies
+            $(".profile-content").html("yet to be implemented ");
+        }
+    }
+
+    //$().alert('close')
+
+    $(".alert-dismissible").fadeTo(2000, 500).slideUp(500, function () {
+        $(".alert-dismissible").alert('close');
+    });
+
+    function ShowBox() {
+        if (@Model.Me.ToString().ToLower() == false) {
+            ViewProfilePicture();
+            return;
+        }
+        var img = document.getElementsByClassName("container-change-profile-image")[0];
+        img.style.display = "block";
+        img.zIndex = 0;
+
+        var wrapper = document.querySelector(".main-wrapper");
+        wrapper.style.pointerEvents = "none";
+        wrapper.style.opacity = 0.5;
+        window.addEventListener('scroll', noScroll);
+    }
+
+    function HideBox() {
+        var img = document.getElementsByClassName("container-change-profile-image")[0];
+        img.style.display = "none";
+        var wrapper = document.querySelector(".main-wrapper");
+        wrapper.style.pointerEvents = "all";
+        wrapper.style.opacity = 1;
+        window.removeEventListener('scroll', noScroll);
+    }
+
+    function noScroll() {
+        window.scrollTo(0, 0);
+    }
+
+    function ViewProfilePicture() {
+        HideBox();
+        var element = document.querySelector(".container-view-profile-picture");
+        element.style.display = "block";
+
+        var wrapper = document.querySelector(".main-wrapper");
+        wrapper.style.pointerEvents = "none";
+        wrapper.style.opacity = 0.5;
+        window.addEventListener('scroll', noScroll);
+    }
+
+    function HideViewImage() {
+        var element = document.querySelector(".container-view-profile-picture");
+
+        element.style.display = "none";
+        //ShowBox();
+
+        var wrapper = document.querySelector(".main-wrapper");
+        wrapper.style.pointerEvents = "all";
+        wrapper.style.opacity = 1;
+    }
+
+
+
+</script>
+<script src="~/lib/microsoft-signalr/signalr.js"></script>
+<script src="~/js/usernotification.js"></script>

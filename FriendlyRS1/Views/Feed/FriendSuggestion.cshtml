@@ -1,0 +1,52 @@
+﻿@model List<ApplicationUser>
+
+@{
+    ViewData["Title"] = "FriendSuggestion";
+    Layout = null;
+}
+
+<style>
+    .friend-card {
+        border-radius: 10px;
+    }
+
+        .friend-card:hover {
+            background-color: #ececec;
+        }
+</style>
+
+<div class="d-flex flex-column">
+    @{
+        if (Model != null)
+        {
+            foreach (var person in Model)
+            {
+                <a asp-controller="UserProfile" asp-action="Index" asp-route-id="@person.Id">
+                    <div class="d-flex friend-card p-2" style="cursor: pointer">
+                        @if (person.ProfileImage != null)
+                        {
+
+                            <img src="data:image/*;base64,@(Convert.ToBase64String(person.ProfileImage))" class="rounded-circle border border-dark" style="height: 50px; width: 50px; background-size: cover; background-position: center;">
+                        }
+                        else
+                        {
+                            <img src="/avatar.png" class="rounded-circle border border-light profileImage" style="height: 50px; width: 50px; background-size: cover; background-position: center;">
+                        }
+                        <div>
+                            <p class="px-2 m-0" style="font-size:14px">@person.FirstName @person.LastName</p>
+                            <p class="px-2 m-0" style="font-size: 10px">@person.City?.Name</p>
+                        </div>
+                    </div>
+                </a>
+                <div class="p-2">
+                    @*<input type="button" value="Connect" class="btn btn-light form-control" />*@
+                </div>
+            }
+        }
+        else
+        {
+            <div>there are no users in db</div>
+        }
+    }
+</div>
+

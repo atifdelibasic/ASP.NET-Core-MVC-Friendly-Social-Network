@@ -1,0 +1,8 @@
+﻿
+
+
+.not:hover {
+    background-color:#efefef;
+    transition: all .1s ease-in-out;
+    cursor: pointer;
+}

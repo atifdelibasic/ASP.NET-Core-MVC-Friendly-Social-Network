@@ -1,0 +1,105 @@
+﻿@model FriendlyRS1.ViewModels.RegisterViewModel
+
+@{
+    Layout = "_Layout";
+}
+<style>
+
+    .fa-eye {
+        position: absolute;
+        right: 10px;
+    }
+
+    .psw-parent {
+        position: relative;
+    }
+</style>
+
+<div class="container">
+    <form asp-action="Register" method="post" class="border p-3 w-50 mx-auto shadow p-3 mb-5 bg-white rounded register-form">
+        <div class="form-group ">
+            <h4>Sign Up </h4>
+            <hr />
+            <small class="text-secondary">It's simple and easy</small>
+        </div>
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="form-group">
+            <label asp-for="FirstName"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+            <small class="text-secondary d-block">We will not show your email to anyone</small>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="DateOdBirth"></label>
+            <input asp-for="DateOdBirth" type="date" class="form-control text-info" />
+            <span asp-validation-for="DateOdBirth" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>Gender</label>
+            <div class="d-flex border rounded align-items-center">
+                @{
+                    for (int i = 0; i < Model.Gender.Count; i++)
+                    {
+                        <div class="p-2">
+                            <input type="radio" asp-for="GenderId" value="@Model.Gender[i].Id" id="@Model.Gender[i].GenderType" />
+                            <label class="text-info m-0">
+                                @Model.Genders[i]
+                            </label>
+                        </div>
+                    }
+                }
+            </div>
+            <span asp-validation-for="GenderId" class="text-danger d-block"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Password"></label>
+            <div class="d-flex align-items-center psw-parent">
+                <input asp-for="Password" class="form-control" id="password" />
+                <i class="fas fa-eye px-2 text-info"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ConfirmPassword"></label>
+            <input asp-for="ConfirmPassword" class="form-control" id="confirmpassword" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+        <div class="text-danger mb-1">
+            @Html.ValidationMessage("name")
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Create account" class="btn btn-info form-control" />
+        </div>
+        <div class="form-group text-center">
+            Have an Account?
+            <a asp-action="Login">Log In</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    const eyeIcon = document.querySelector(".fa-eye");
+
+    eyeIcon.addEventListener("click", (e) => {
+        let password = document.getElementById("password");
+        let password2 = document.getElementById("confirmpassword");
+
+        password2.type = password.type = password.type === "password" ? "text" : "password";
+
+        eyeIcon.classList.toggle('fa-eye-slash');
+    });
+
+</script>

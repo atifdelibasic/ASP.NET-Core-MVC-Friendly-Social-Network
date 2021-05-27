@@ -1,0 +1,19 @@
+﻿@model FriendlyRS1.ViewModels.ResendEmailVM
+@{
+    Layout = "_Layout";
+    var msg = (string)TempData["error_msg"];
+}
+
+<div class="container">
+    <form asp-action="ResendEmail" method="post" class="w-50 shadow p-3 mb-5 bg-white rounded mx-auto resend-email">
+        <h3>Resend Confirmation Email</h3>
+        <hr />
+        <div class="form-group">
+            <label>Email</label>
+            <input asp-for="Email" type="email" class="form-control" placeholder="Enter Email" />
+            <span class="text-danger">@msg</span>
+            <hr />
+            <input type="submit" value="Send Email" class="form-control btn btn-info" />
+        </div>
+    </form>
+</div>

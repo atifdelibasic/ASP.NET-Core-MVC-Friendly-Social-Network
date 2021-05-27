@@ -1,0 +1,58 @@
+﻿@model HobbyVM
+
+@{
+    ViewData["Title"] = "Add";
+    List<SelectListItem> hobbyCategories = ViewData["hobbyCategories"] as List<SelectListItem>;
+}
+
+<div class="container w-50">
+    <span asp-validation-for="Id">  </span>
+    <form asp-action="Create" method="post">
+        @if (Model == null || Model.Id == null)
+        {
+            <input asp-for="Id" hidden />
+            <div class="form-group">
+                <label asp-for="Title"></label>
+                <input type="text" class="form-control" asp-for="Title">
+                <span class="text-danger" asp-validation-for="Title"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <textarea class="form-control" name="@Html.NameFor(x=>x.Description)"></textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="HobbyCategoryId"></label>
+                <select class="form-control form-control-sm" asp-for="HobbyCategoryId" asp-items="hobbyCategories">
+                    <option>Please select one</option>
+                </select>
+                <span class="text-danger" asp-validation-for="HobbyCategoryId"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        }
+        else
+        {
+            <input asp-for="Id" hidden />
+            <div class="form-group">
+                <label asp-for="Title"></label>
+                <input type="text" class="form-control" asp-for="Title" value="@Model.Title">
+                <span class="text-danger" asp-validation-for="Title"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <textarea class="form-control" name="@Html.NameFor(x=>x.Description)">@Model.Description</textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="HobbyCategoryId"></label>
+                <select class="form-control form-control-sm" asp-for="HobbyCategoryId" asp-items="hobbyCategories">
+                    <option>Please select one</option>
+                </select>
+                <span class="text-danger" asp-validation-for="HobbyCategoryId"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Edit</button>
+        }
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"></partial>
+}

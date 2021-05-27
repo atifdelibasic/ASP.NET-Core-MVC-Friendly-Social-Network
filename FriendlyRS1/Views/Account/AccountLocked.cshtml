@@ -1,0 +1,10 @@
+﻿
+@{
+    string message = TempData["message"] as string;
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <h1 class="text-danger">Account locked</h1>
+    <h2>@message</h2>
+</div>

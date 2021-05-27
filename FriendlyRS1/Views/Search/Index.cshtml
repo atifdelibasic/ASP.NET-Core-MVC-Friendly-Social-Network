@@ -1,0 +1,141 @@
+﻿
+@model QueryVM
+
+
+<style>
+    .location-icons {
+        display: none !important;
+    }
+
+    .image {
+        width: 90px;
+        height: 90px;
+    }
+
+    .search-user-div {
+        border: 1px solid #d3d3d3 !important;
+        border-radius: 1em;
+        padding: 1em !important;
+        display: flex;
+        align-items: center;
+        width: 65%;
+    }
+
+    .search-user-name {
+        font-size: 1.5rem;
+    }
+
+    .search-main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    @@media only screen and (max-width: 600px) {
+
+        .icons-responsive {
+            width: 100%;
+        }
+    }
+</style>
+<div class="container mt-5 p-lg-4 p-3 bg-light border">
+    <div class="d-flex align-items-center">
+        <h4 class="mb-0 mr-2">Search for people</h4>
+        <i class="fas fa-search fa-lg text-secondary"></i>
+    </div>
+    <hr>
+    <div id="SearchIndex">
+
+    </div>
+</div>
+
+<div id="notifications" class="notification"></div>
+
+<input type="hidden" id="signalRConnectionId" />
+
+
+
+<script>
+    var userId = @Model.LoggedUserId;
+
+    window.addEventListener("load", () => {
+        search.val( ('@Model.q'));
+        load();
+    })
+
+    function load() {
+        let url = '/Search/GetPeople/';
+        var infinityScroll = new InfinitiySroll("SearchIndex", url, { q: search.val(), id: @Model.LoggedUserId }, "", true);
+        }     
+
+    //function ConnectBtnLoad(userId) {
+    //    console.log(userId);
+    //    var url = "/UserProfile/FriendConnect/" + userId;
+    //    //$("#" + userId).html(loaderSmall);
+    //    $.ajax({
+    //        type: 'GET',
+    //        url: url,
+    //        success: function (data) {
+    //            $("#" + userId).html(data);
+    //            console.log("load btn");
+    //        }
+    //    })
+    //}
+
+    //function Toggle(a) {
+    //    console.log("#respondRequest " + a);
+    //    var b = document.getElementById('respondRequest ' + a);
+    //    $(b).toggle();
+    //}
+
+    //function Cancel(userId) {
+    //    var url = "/UserProfile/CancelRequest";
+    //    var form = $("#form" + userId);
+    //    AjaxPost(form, url, userId);
+    //}
+
+    //function addFriend(userId, element) {
+    //    //element.innerHTML = loaderSmall;
+
+    //    // Send friend request
+    //    var url = "/UserProfile/AddFriend";
+    //    var form = $("#form" + userId);
+    //    AjaxPost(form, url, userId);
+
+    //    // Send push notification to user
+    //    var url2 = "/UserProfile/Testiranje";
+    //    var form2 = $("#form" + userId);
+    //    AjaxPost(form2, url2);
+    //}
+
+    //function ConfirmRequest(userId) {
+    //    var url = "/UserProfile/EstablishConnection";
+    //    var form = $("#form" + userId);
+    //    AjaxPost(form, url, userId);
+
+    //    var url2 = "/UserProfile/Testiranje";
+    //    var form2 = $("#form" + userId);
+    //    AjaxPost(form2, url2);
+    //}
+
+    //function RespondRequest() {
+    //    var menu = document.querySelector("#menu");
+    //    menu.classList.toggle('toggle-display');
+    //}
+
+
+    //function AjaxPost(form, url, id = null) {
+    //    $.ajax({
+    //        type: 'POST',
+    //        url: url,
+    //        data: form.serialize(),
+    //        success: function (data) {
+    //            if (id != null) {
+    //                $("#" + id).html(data);
+    //            }
+    //        }
+    //    });
+    //}
+
+</script>
+<script src="~/lib/microsoft-signalr/signalr.js"></script>
+<script src="~/js/usernotification.js"></script>

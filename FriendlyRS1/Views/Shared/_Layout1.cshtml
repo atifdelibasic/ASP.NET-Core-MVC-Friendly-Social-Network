@@ -1,0 +1,405 @@
+﻿@*@inject SignInManager<ApplicationUser> signInManager;*@
+
+@using System.Security.Claims;
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery-validate/jquery.validate.js"></script>
+    <script src="~/js/JsHelper.js"></script>
+
+
+    <title>@ViewData["Title"] Friendly</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/custom.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            padding-top: 4em;
+            padding-right: 0px !important;
+        }
+        /* dropmenu bell */
+        .notifications {
+            max-height: 90%;
+            overflow-y: scroll;
+            width: 400px;
+            position: absolute;
+            z-index: 1;
+            right: 20px;
+        }
+
+        .bar-icon {
+            font-size: 1.6rem;
+            transition: all .2s ease-in-out;
+        }
+
+            .bar-icon:hover {
+                cursor: pointer;
+            }
+
+
+        .nav-icon > * {
+            /*color: #00b7ff !important;*/
+            color: #2d2d2d !important;
+        }
+
+        .nav-icon-default {
+            text-align: center;
+            transition: .2s ease-in-out;
+            cursor: pointer;
+        }
+
+
+
+
+        .fa-stack[data-count]:after {
+            position: absolute;
+            right: -20%;
+            top: -20%;
+            content: attr(data-count);
+            font-size: 70%;
+            padding: .6em;
+            border-radius: 50%;
+            line-height: .75em;
+            color: white;
+            background: rgba(255,0,0,.9);
+            text-align: center;
+            min-width: 2em;
+            font-weight: bold;
+        }
+
+        .search-result {
+            position: absolute;
+            background-color: #fff;
+            top: 4em;
+            padding: 1em;
+            left: 0;
+            width: 22em;
+            color: #000;
+            font-size: 15px;
+            display: none;
+            z-index: 1;
+            word-wrap: break-word;
+        }
+
+        .search-button {
+            position: absolute;
+            display: none;
+        }
+
+        .search-more {
+            display: none;
+            color: cornflowerblue;
+            text-decoration: underline;
+        }
+
+        ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+            color: #2d2d2d;
+            opacity: 1; /* Firefox */
+        }
+
+        :-ms-input-placeholder { /* Internet Explorer 10-11 */
+            color: #2d2d2d;
+        }
+
+        ::-ms-input-placeholder { /* Microsoft Edge */
+            color: #2d2d2d;
+        }
+
+        .searchFriendly {
+            color: #000;
+            padding: .6em 2em;
+            box-sizing: border-box;
+            border-radius: 3px;
+            outline: none;
+            border: none;
+            background-color: #F0F2F5;
+        }
+
+        .has-search .form-control-feedback {
+            position: absolute;
+            z-index: 2;
+            display: block;
+            width: 2.375rem;
+            line-height: 2.375rem;
+            text-align: center;
+            color: #aaa;
+        }
+
+        .image {
+            width: 50px;
+            height: 50px;
+        }
+
+        .search-user-div {
+            padding: 0 !important;
+            border: none !important;
+            display: flex;
+            align-items: center;
+            background-color: #f6f6f6;
+        }
+
+        /* push notification*/
+        .notification {
+            bottom: 10px;
+            left: 10px;
+            font-size: 15px;
+            position: fixed;
+            width: 450px;
+        }
+
+
+        @@media (hover: hover) and (pointer: fine) {
+            .bar-icon:hover {
+                color: unset !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <header>
+
+        <nav class="navbar navbar-expand-sm  navbar-light fixed-top bg-light border-bottom box-shadow d-flex justify-content-lg-between justify-content-start layout-nav">
+            <div class="d-flex align-items-center search-div">
+                <a class="navbar-brand text-secondary" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-globe fa-lg text-info bar-icon"></i>
+                </a>
+
+                <div class="d-flex">
+                    <div class="has-search">
+                        <span class="fa fa-search form-control-feedback"></span>
+                        <input type="text" placeholder="Search friendly" id="searchFriendly" maxlength="60" class="searchFriendly" oninput="UpdateUrl()" autocomplete="off" />
+                        <button class="btn btn-outline-info p-2 searchButton search-button" onclick="SearchPeople()">Search</button>
+                    </div>
+                </div>
+
+                <div id="searchDiv" class="search-result shadow rounded">
+                    <div id="searchResult">
+                        <span>No search results.</span>
+                        <hr />
+                    </div>
+                    <a id="searchMore" class="search-more" href="/Search/Index/?q=">Search</a>
+                </div>
+            </div>
+            <div class="d-flex align-items-center location-icons">
+
+                <div class=" nav-icon-default nav-icon px-lg-3 pr-3" id="home" data-toggle="tooltip" data-placement="top" title="Home page">
+                    <i class="fas fa-house-user fa-2x text-info bar-icon"></i>
+                </div>
+
+                <div class=" nav-icon-default px-lg-3 px-3" id="nearby" data-toggle="tooltip" data-placement="top" title="People nearby">
+                    <i class="fas fa-map-marker-alt fa-2x text-info  bar-icon"></i>
+                </div>
+            </div>
+
+            <div class="acitvity-icons icons-responsive">
+                <ul class="d-flex align-items-center justify-content-between mb-0 p-0" style="list-style: none;">
+                    <li data-toggle="tooltip" title="My Profile" class="px-lg-3 px-1">
+                        <a class="far fa-user fa-2x text-info bar-icon" asp-controller="UserProfile" asp-action="Index" asp-route-id="@null" style="text-decoration:none"></a>
+                    </li>
+                    <li class="text-primary font-weight-bold px-lg-3 px-1"> @(((ClaimsIdentity)User.Identity).FindFirst("FirstName").Value)</li>
+                    <li data-toggle="tooltip" title="Messages" class="px-lg-3 px-1">
+                        <i class="far fa-comment fa-2x text-info bar-icon"></i>
+                    </li>
+                    <li id="notif" data-toggle="tooltip" title="Notifications" class="px-lg-3 px-1">
+                        <span class="fa-stack" data-count="0" id="notif-count">
+                            <i class="far fa-bell fa-2x fa-stack-1x fa-inverse text-info bar-icon"></i>
+                        </span>
+                    </li>
+                    <li data-toggle="tooltip" title="Log out" class="px-lg-3 px-1">
+                        <a class="fas fa-sign-out-alt fa-2x text-info bar-icon" onclick="LogOut()"></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div style="background-color:#fff;  display: none;" class="notifications p-1 shadow mt-5 mt-lg-0" id="mainNotif">
+            @*div za notifikacije*@
+            <h5 class="p-2 font-weight-bold">Notifications</h5>
+            <div id="notifDiv">
+                @*loading notificatins*@
+            </div>
+        </div>
+
+    </header>
+    @RenderBody()
+    <div>
+    </div>
+
+    @RenderSection("Scripts", required: false)
+    @*<script src="~/js/InfinitiySroll.js"></script>*@
+    <script src="~/js/InfinitiySroll.js"></script>
+    <script src="~/lib/jquery-timeago/jquery.timeago.js"></script>
+
+    @await Component.InvokeAsync("NToastNotify")
+
+
+</body>
+</html>
+
+<script>
+
+    var searchMore = $("#searchMore");
+    var search = $("#searchFriendly");
+    var searchDiv = $("#searchDiv");
+    var searchButton = $(".searchButton");
+    var searchResult = $("#searchResult");
+
+    $(search).keypress(function (e) {
+        if (e.which == 13) {
+            SearchPeople();
+        }
+    });
+
+
+    // bootstrap tooltip on hover
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
+
+    $(".nav-icon-default").click(function () {             // when clicking any of these links
+        $(".nav-icon-default").removeClass("nav-icon"); // remove highlight from all links
+        $(this).addClass("nav-icon");          // add highlight to clicked link
+    })
+
+    window.addEventListener("load", () => {
+        CountNotifications();
+    });
+
+
+    let notif = document.getElementById("notif");
+
+    // toggle notificaitons div on click
+    $(document).ready(function () {
+        $("#notif").click(function () {
+            $("#mainNotif").fadeToggle("fast", function () {
+                if ($("#mainNotif").is(":visible")) {
+                    //get notifications
+                    GetNotifications();
+                } else {
+                    console.log("Notifications are hidden dont fetch from db.");
+                    $("#notifDiv").html("");
+                }
+            });
+        });
+    });
+
+    // unread notifications
+    function CountNotifications() {
+        let url = '/Feed/CountNotifications/';
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function (num) {
+                $('#notif-count').attr('data-count', num);
+            }
+        })
+    }
+
+    // on click get notifications from db
+    function GetNotifications() {
+
+        var infinityScroll = new InfinitiySroll("notifDiv", "/Feed/GetNotifications", { sortOrder: "ascending", searchString: "3" }, "mainNotif");
+        $('#notif-count').attr('data-count', 0);
+
+    }
+
+    var searchIndex = $('#SearchIndex');
+
+    $(search).click(function (e) {
+        $(searchDiv).show();
+        $(searchButton).show();
+
+        e.stopPropagation();
+    })
+
+
+    $(searchResult).click(function (e) {
+        e.stopPropagation();
+    })
+
+    $(searchButton).click(function (e) {
+        e.stopPropagation();
+    })
+
+    $(document).click(function (e) {
+        $(searchDiv).hide();
+        $(searchButton).hide();
+    });
+
+    function SearchPeople() {
+
+        if ($(searchDiv).is(":hidden")) {
+            return;
+        }
+        //
+        if (searchIndex.length) {
+            let url = "/Search/Index/?q=" + search.val();
+            window.location.assign(url);
+        }
+
+        let url = '/Search/GetPeople';
+        let s = search.val();
+
+        searchResult.html(spinnerGrow);
+        console.log(s);
+
+        let params = {
+            q: s
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: params,
+            success: function (res) {
+                searchResult.html(res);
+            }
+        });
+    }
+
+    function UpdateUrl() {
+        $(searchMore).attr("href", "/Search/Index/?q=" + search.val());
+        let t = search.val().trim();
+        if (t.length > 0) {
+            searchMore.show();
+            searchMore.text('Search more ' + search.val());
+        } else {
+            searchMore.hide();
+        }
+    }
+
+    function LogOut() {
+        if (confirm('Want to Log out, are you sure?')) {
+            let url = 'Account/LogOut/';
+
+            $.ajax({
+                url: url,
+                success: function () {
+                    window.location.assign("/Home/Index");
+                }
+            })
+        }
+    }
+
+</script>

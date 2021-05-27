@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Delete";
+    Layout = null;
+    List<Hobby> hobbies = TempData["hobbies"] as List<Hobby>;
+}
+
+<div>
+    @foreach (var hobby in hobbies)
+    {
+        <div class="d-flex justify-content-between">
+            <div>
+                <p class="mb-1"><strong>@hobby.Title</strong></p>
+                <label>Category: </label>
+                <label>@hobby.HobbyCategory.Name</label>
+            </div>
+            <div class="d-flex flex-column justify-content-between">
+                @*<a asp-action="Delete" asp-route-id="@hobby.Id" class="btn btn-danger mt-1">Delete</a>*@
+                <a href="#" onclick="Dislay(@hobby.Id)" class="btn btn-danger mt-1">Delete</a>
+                <a asp-action="Edit" asp-route-id="@hobby.Id" class="btn btn-primary mt-1">Edit</a>
+            </div>
+        </div>
+        <hr class="m-1" />
+    }
+</div>
+

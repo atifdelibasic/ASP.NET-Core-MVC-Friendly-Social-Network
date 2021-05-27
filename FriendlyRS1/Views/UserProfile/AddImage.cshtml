@@ -1,0 +1,22 @@
+﻿@model AddImageVM
+
+@{
+    ViewData["Title"] = "AddImage";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <form method="post" enctype="multipart/form-data" asp-controller="UserProfileController" asp-action="AddImage">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <input class="btn btn-outline-secondary" type="button" value="Upload"/>
+                </div>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" asp-for="Image">
+                    <label class="custom-file-label" for="inputGroupFile03">Choose file</label>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

@@ -1,0 +1,11 @@
+﻿
+@{
+    ViewData["Title"] = "AccessDenied";
+    string returnUrl = ViewData["returnUrl"] as string;
+    Layout = "_Layout";
+}
+
+<div class="d-flex flex-column justify-content-center align-items-center ">
+    <h4>You are not permitted to access @returnUrl </h4>
+    <img class="h-50 w-50 " src="/Images/access_denied.jpg" alt="Alternate Text" />
+</div>

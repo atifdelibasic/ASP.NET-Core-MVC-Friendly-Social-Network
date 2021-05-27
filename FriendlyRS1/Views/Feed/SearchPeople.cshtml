@@ -1,0 +1,35 @@
+﻿@model UserVM
+@{
+    Layout = null;
+}
+
+<style>
+
+    .image {
+        width: 36px;
+        height: 36px;
+    }
+</style>
+
+<div>
+    @foreach (var user in @Model.Users)
+    {
+        <a asp-controller="UserProfile" asp-action="Index" asp-route-id="@user.Id" class="d-flex p-2 align-content-center">
+            <div>
+
+                @if (user.ProfileImage != null)
+                {
+                    <img src="data:image/*;base64,@(Convert.ToBase64String(user.ProfileImage))" class="image rounded">
+                }
+                else
+                {
+                    <img src="/avatar.png" class="image rounded">
+                }
+            </div>
+
+            <div class="text-secondary ">
+                @user.FirstName @user.LastName
+            </div>
+        </a>
+    }
+</div>

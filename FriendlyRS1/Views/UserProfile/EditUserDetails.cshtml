@@ -1,0 +1,75 @@
+﻿@model UserDetailsVM
+
+<style>
+    .location-icons {
+        display: none !important;
+    }
+
+    @@media only screen and (max-width: 600px) {
+
+        .icons-responsive {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container mt-5 p-4 bg-light">
+    <h4>Edit profile</h4>
+    <form class="p-2" method="post" asp-action="EditUserDetails">
+        <div asp-validation-summary="ModelOnly"></div>
+
+        <input type="text" asp-for="UserId" hidden />
+
+        <div class="form-group">
+            <label asp-for="FirstName"></label>
+            <input asp-for="FirstName" type="text" class="form-control" />
+            <span class="text-danger" asp-validation-for="FirstName"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName"></label>
+            <input asp-for="LastName" type="text" class="form-control" />
+            <span class="text-danger" asp-validation-for="LastName"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DateOfBirth"></label>
+            <input asp-for="DateOfBirth" type="date" class="form-control" />
+            <span class="text-danger" asp-validation-for="DateOfBirth"></span>
+
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PhoneNumber"></label>
+            <input asp-for="PhoneNumber" type="text" class="form-control" />
+            <span class="text-danger" asp-validation-for="PhoneNumber"></span>
+            <div></div>
+            <small class="text-secondary">Type only numbers</small>
+
+        </div>
+
+        <div class="form-group">
+            <label asp-for="About"></label>
+            <input asp-for="About" type="text" class="form-control" />
+            <span class="text-danger" asp-validation-for="About"></span>
+            <small>etc. IT Student | Sport lover </small>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Save changes" class="btn btn-outline-success" />
+            <a asp-action="Index" asp-route-id="@Model.UserId" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+
+<div id="notifications" class="notification"></div>
+
+<input type="hidden" id="signalRConnectionId" />
+
+<script>
+    var userId = @Model.LoggedUserId;
+
+</script>
+
+<script src="~/lib/microsoft-signalr/signalr.js"></script>
+<script src="~/js/usernotification.js"></script>
+

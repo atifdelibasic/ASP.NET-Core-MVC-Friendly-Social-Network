@@ -1,0 +1,65 @@
+﻿@model AddFriendVM
+@{
+    Layout = null;
+}
+
+<style>
+    .li-item {
+        cursor: pointer;
+        width: 100% !important;
+        padding: .5em !important;
+    }
+
+    .menu {
+        z-index: 1;
+        position: absolute;
+        display: none;
+        box-sizing: border-box;
+    }
+</style>
+
+<form asp-action="Testiranje" id="@($"form{Model.UserProfileId}")">
+    <input asp-for="UserProfileId" hidden />
+    <input asp-for="LoggedUserId" hidden />
+    <input asp-for="FriendshipId" hidden />
+    <input asp-for="User1Id" hidden />
+    <input asp-for="User2Id" hidden />
+    <input asp-for="ActionUserId" hidden />
+
+    @if (Model.FriendshipId == 0)
+    {
+        <button type="button" onclick="addFriend(@Model.UserProfileId, this)" class="btn btn-info connect-btn" style="width: 13rem;text-align:center" id="connect">
+            Connect
+            <span class="fas fa-user-plus"></span>
+        </button>
+        <input type="hidden" asp-for="NotificationMsg" value="wants to connect with you." />
+    }
+    else if ((int)(byte)Model.Status == 0)
+    {
+        if (Model.LoggedUserId == Model.ActionUserId)
+        {
+            <button type="button" onclick="Cancel(@Model.UserProfileId)" class="btn btn-danger connect-btn" style="width: 13rem" id="cancel @Model.UserProfileId">
+                Cancel the request
+                <span class="fas fa-user-times"></span>
+            </button>
+        }
+        else
+        {
+            <button type="button" onclick="Toggle(@Model.UserProfileId)" id="btnRespond @Model.UserProfileId" style="position: relative; width: 13rem" class="btn btn-success btn-connect">Respond<i class="far fa-edit"></i></button>
+            <div class="px-0 menu" id="respondRequest @Model.UserProfileId">
+                <button type="button" onclick="ConfirmRequest(@Model.UserProfileId)" class="btn btn-success li-item">Accept <i class="fas fa-user-check"></i></button>
+                <button type="button" onclick="Cancel(@Model.UserProfileId)" class=" btn btn-danger li-item" id="cancel">Decline <i class="fas fa-user-times"></i></button>
+            </div>
+            <input type="hidden" asp-for="NotificationMsg" value="accepted your connection request." />
+
+        }
+
+    }
+    else if ((int)Model.Status == 1)
+    {
+        <button type="button" onclick="Toggle(@Model.UserProfileId)" id="btnRespond @Model.UserProfileId" style="position: relative; width: 13rem; text-align:center" class="btn btn-info connect-btn">Connected <i class="fas fa-user-check"></i></button>
+        <ul class="px-0 menu" id="respondRequest @Model.UserProfileId" style="position: absolute; z-index: 1; display: none ">
+            <li onclick="Cancel(@Model.UserProfileId)" class=" btn btn-danger li-item" style="top:5px">Remove friend <i class="fas fa-user-times"></i></li>
+        </ul>
+    }
+</form>

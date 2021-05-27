@@ -1,0 +1,277 @@
+﻿@model UserDetailsVM
+@{
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    /* width */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #d8d8d8;
+    }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    .klasa {
+        width: 20%;
+    }
+
+    .main-wrapper {
+        height: 100%;
+        width: 100%;
+    }
+
+    .profile-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: .5em;
+    }
+
+    .profile-section {
+        cursor: pointer;
+        transition: all .1s ease-in-out;
+    }
+
+        .profile-section:hover {
+            background-color: #ececec;
+        }
+
+    a {
+        color: #000;
+    }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+    .post {
+        width: 50%;
+        overflow: auto;
+    }
+
+    .create-post-text {
+        background-color: #eeeeee;
+        cursor: pointer;
+    }
+
+        .create-post-text:hover {
+            background-color: #e6e6e6;
+        }
+
+    .slika:hover {
+        opacity: .8;
+    }
+
+    .create-post-page {
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+    }
+
+    textarea {
+        overflow-y: scroll;
+        resize: none;
+    }
+
+    .layer {
+        background-color: rgba(248, 247, 216, 0.7);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 3;
+    }
+
+    .test-link {
+        text-decoration: underline;
+        color: red;
+        font-weight: bold;
+    }
+
+    #Suggest {
+        overflow-y: scroll;
+        height: 500px;
+    }
+
+    .timeline-time {
+        display: none;
+    }
+
+    .timeline-icon {
+        display: none;
+    }
+
+    .timeline {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<div class="d-flex justify-content-between main-wrapper  pt-5 pt-lg-4">
+    <section class="klasa">
+        @*<a asp-controller="UserProfile" asp-action="Index">
+            <div class="p-2 profile-section">
+                @if (Model.ProfileImage != null)
+                {
+                    <img src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfileImage))" class="profile-icon" />
+                }
+                <span>@Model.ToString() </span>
+            </div>
+        </a>*@
+
+        
+
+    </section>
+
+
+    <section class="post" id="skrolanje">
+
+        <!-- Modal -->
+        <div class="d-flex flex-column p-lg-2">
+            <div id="partialAddPost">
+                <partial name="_CreatePost" model="Model">
+            </div>
+
+            <div id="posts" class="flex-column align-items-center justify-content-center">
+            </div>
+
+
+        </div>
+    </section>
+
+    <section class="klasa">
+    </section>
+
+</div>
+<div id="notifications" class="notification"></div>
+
+<input type="hidden" id="signalRConnectionId" />
+
+<script>
+
+    // id of logged user
+    var userId = @Model.UserId;
+
+    // buttons
+    let home = $("#home");
+    let nearby = $("#nearby");
+
+    // divs
+    let posts = $("#posts");
+    let mainWrapper = document.querySelector(".main-wrapper");
+    //let select = document.getElementById("hobbies");
+    let loader = `<div class="d-flex justify-content-center">
+                  <div class="spinner-border" role="status">
+                  <span class="sr-only">loading...</span>
+                 </div>
+                 </div>`;
+
+    var infinityScroll = null;
+
+
+    window.addEventListener('load', () => {
+        posts.html(spinnerGrow);
+        // suggest connections
+        friendSuggestions();
+        // load connections posts
+        loadPosts();
+    });
+
+    function loadPosts() {
+        if (infinityScroll == null) {
+            infinityScroll = new InfinitiySroll("posts", "/Feed/_TestData", { sortOrder: "ascending", searchString: "3" }, "skrolanje");
+            posts.html("");
+        } else  {
+            infinityScroll.Update("/Feed/_TestData", { sortOrder: "ascending", searchString: "3" });
+        }
+    }
+
+    $().alert('close')
+
+
+    function getLocation(lat, long) {
+
+        $.ajax({
+            url: 'https://api.positionstack.com/v1/reverse',
+            data: {
+                access_key: 'a1022052dd68613503c334b0ca52ee2a',
+                query: '51.507822,-0.076702',
+                output: 'xml',
+                limit: 1
+            }
+        }).done(function (data) {
+            console.log(data);
+        });
+    }
+
+    function friendSuggestions() {
+        $("#Suggest").html(loader);
+
+        var url = '/Feed/FriendSuggestion/';
+        $.get(url, function (d) {
+            $("#Suggest").html(d);
+        });
+    }
+
+    home.click(function () {
+        infinityScroll.loading = true;
+        posts.html("");
+        loadPosts();
+    });
+
+    nearby.click(function () {
+        posts.html("");
+        infinityScroll.loading = true;
+
+        GeolocationAPI();
+    });
+
+    // Geolocation API
+    function success(position) {
+        const longitude = position.coords.longitude;
+        const latitude = position.coords.latitude;
+
+        GetNearbyPosts(latitude, longitude);
+    }
+
+    function error() {
+        console.log('Unable to retrieve your location');
+    }
+
+    function GetNearbyPosts(lat1, long1) {
+
+        if (infinityScroll != null) {
+            infinityScroll.Update("/Feed/GetNearbyPosts", { lat1: lat1, long1: long1 });
+        }
+    }
+
+    function GeolocationAPI() {
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success, error);
+        } else {
+            console.log("Geolocation is not supported by your browser");
+        }
+    }
+    
+
+</script>
+
+<script src="~/lib/microsoft-signalr/signalr.js"></script>
+<script src="~/js/usernotification.js"></script>

@@ -1,0 +1,72 @@
+﻿@model LoginVM
+@{
+    Layout = "_Layout";
+}
+<style>
+
+    .fa-eye {
+        position: absolute;
+        right: 10px;
+    }
+
+    .psw-parent {
+        position: relative;
+    }
+</style>
+
+<div class="container mt-5">
+    <form asp-action="Login" method="post" class="border p-3 w-50 mx-auto shadow p-3 mb-5 bg-white rounded login-form">
+        <div class="form-group d-flex align-items-center">
+            <h4>Log In</h4>
+        </div>
+        <hr />
+        <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+        <div class="form-group">
+            <label>Email</label>
+            <input asp-for="Username" type="email" class="form-control" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <div class="d-flex align-items-center psw-parent">
+                <input asp-for="Password" type="password" class="form-control" id="password" />
+                <i class="fas fa-eye px-2 text-info"></i>
+            </div>
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="form-check d-flex justify-content-between">
+            <div>
+                <input asp-for="RememberPassword" type="checkbox" class="form-check-input">
+                <label class="form-check-label">Remember me</label>
+            </div>
+            <a asp-action="ForgotPassword" class="text-primary">Forgot password?</a>
+        </div>
+        <hr />
+        <div class="form-group">
+            <button type="submit" class="btn btn-info form-control">Login</button>
+        </div>
+        <div class="form-group text-center">
+            Don't have an account?
+            <a asp-action="Register"> Sign Up</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"></partial>
+}
+<script>
+
+
+    const eyeIcon = document.querySelector(".fa-eye");
+
+    eyeIcon.addEventListener("click", (e) => {
+        let password = document.getElementById("password");
+
+
+        password.type = password.type === "password" ? "text" : "password";
+
+        eyeIcon.classList.toggle('fa-eye-slash');
+    });
+
+</script>

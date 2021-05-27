@@ -1,0 +1,120 @@
+﻿@model DisplayHobbyVM
+
+@{
+    ViewData["Title"] = "DisplayHobbies";
+    List<ApplicationUserHobby> hobbies = ViewData["Hobbies"] as List<ApplicationUserHobby>;
+    Layout = null;
+    string ErrorMsg = TempData["ErrorMsg"] as string;
+
+}
+
+<style>
+    .clearfix:before,
+    .clearfix:after {
+        content: "";
+        display: table;
+    }
+
+    *, :after, :before {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .clearfix:after {
+        clear: both;
+    }
+
+    .container-hobby-tags {
+        width: 70%;
+        margin-top: 5px;
+        padding: 5px;
+    }
+
+    .container-inner {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .hobby-tag {
+        float: left;
+        text-align: center;
+        margin: 5px;
+        padding: 7px;
+        border-radius: 3px 4px;
+        font-size: 15px;
+        display: flex;
+        justify-content: center;
+        color: white;
+    }
+</style>
+
+<div id="showContent">
+    <div class="bg-light">
+        <hr class="m-1" />
+        <div id="container">
+            <form id="userHobbyForm" asp-action="AddHobbyToUser" class="p-4" method="post">
+                <p class="text-dark"><strong>Choose your hobbies! </strong> It will help us to connect you with people with same interests.</p>
+                <div class="d-flex align-items-center" style="padding:5px" ;>
+                    <div class="w-50 choose-hobby">
+                        <select id="hobbySelect" class="form-control " asp-for="HobbyID" asp-items="@Model.Hobbies">
+                            <option>Select hobby</option>
+                        </select>
+                    </div>
+                    <input type="button" onclick="AddHobbyToUser();" class="btn btn-success ml-1" value="Add" />
+                </div>
+                <div class="container-hobby-tags clearfix">
+                    @if(ErrorMsg != null)
+                    {
+                        <p class="text-danger">@ErrorMsg</p>
+                    }
+                    <div class="container-inner">
+                        @foreach (var hobby in hobbies)
+                        {
+                            <div class="hobby-tag text-light bg-info">
+                                <div class="d-flex">
+                                    <div class="mr-2">
+                                        <span>@hobby.Hobby.Title</span>
+                                    </div>
+                                    <div>
+                                        <a class="fas fa-times text-light" onclick="DeleteHobbyFromUser(@hobby.Hobby.Id)" style="cursor:pointer"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function AddHobbyToUser() {
+        var form = $("#userHobbyForm");
+        var url = "/UserProfile/AddHobbyToUser";
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: form.serialize(),
+            success: function (data) {
+                $("#showContent").html(data);
+            }
+        })
+    }
+
+    function DeleteHobbyFromUser(id) {
+        var url = "/UserProfile/DeleteHobbyFromUser/" + id;
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (data) {
+                $("#showContent").html(data)
+            }
+        })
+
+    }
+</script>
+
+

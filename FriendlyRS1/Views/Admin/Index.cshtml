@@ -1,0 +1,41 @@
+﻿@model Article
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    #articleList div {
+        text-align: left;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ccc;
+    }
+
+        #articleList div h3 {
+            margin-bottom: 5px;
+        }
+
+        #articleList div p {
+            margin-bottom: 5px;
+        }
+</style>
+@using (Html.BeginForm("Index", "Admin", FormMethod.Post, new { id = "Article" }))
+{
+    <div class="row">
+        <div class="col-6">
+            Article Heading
+        </div>
+        <div class="col-6">
+            @Html.TextBoxFor(model => Model.articleHeading, new { @maxlength = "50" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            Article Content
+        </div>
+        <div class="col-6">
+            @Html.TextBoxFor(model => Model.articleContent, new { @maxlength = "100" })
+        </div>
+    </div>
+    <div>
+        <input type="submit" id="Add" value="Add" />
+    </div>
+}

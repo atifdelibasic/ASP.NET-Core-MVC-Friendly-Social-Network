@@ -1,0 +1,32 @@
+﻿
+@{
+    Layout = "_Layout";
+}
+
+
+<style>
+    .login-register {
+        width: 50%;
+        justify-content: center;
+        align-items: center;
+    }
+
+</style>
+ 
+<div class="container mt-4 bg-light py-4 shadow rounded">
+    <div class="d-flex flex-column justify-content-center align-items-center" >
+        <h1 class="display-4 text-danger">Friendly</h1>
+        <p>Social Platform</p>
+        <i class="fas fa-users fa-9x text-info"></i>
+        <h4 class="text-secondary text-center friendly-description">
+            Friendly helps you to easier connect with people that share common
+            <span class="text-danger">
+                hobbies or interests.
+            </span>
+        </h4>
+        <div class="d-flex login-register">
+            <a class="btn btn-outline-info flex-grow-1 m-1 p-2" asp-controller="Account" asp-action="Login">Log in</a>
+            <a class="btn btn-outline-danger flex-grow-1 m-1 p-2" asp-controller="Account" asp-action="Register">Create account</a>
+        </div>
+    </div>
+</div>

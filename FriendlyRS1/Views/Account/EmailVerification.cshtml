@@ -1,0 +1,16 @@
+﻿@{
+    Layout = "_Layout";
+}
+<div class="container">
+    <div class="border p-3 w-50 mx-auto shadow p-3 mb-5 bg-white rounded email-verify">
+        <h2 class="text-info">Email verification <i class="far fa-check-circle text-success"></i></h2>
+        <hr />
+        <small>Click on the link to confirm your account</small>
+        <p>We have sent confirmation link to your Email address !</p>
+        <a asp-controller="Account" asp-action="Login" class="">Log In <span class="text-secondary">to your account</span></a>
+
+        <hr />
+        <h6>Didn't recieve Email? <a asp-action="SendEmailAgain">Send again</a></h6>
+        <small>Check your junk mail, just in case</small>
+    </div>
+</div>

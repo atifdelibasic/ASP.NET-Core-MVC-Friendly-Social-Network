@@ -1,0 +1,65 @@
+﻿@model FriendlyRS1.ViewModels.UserDetailsVM
+
+@{
+    Layout = null;
+}
+
+<style>
+    .list-item {
+        padding: .6em 1em;
+        list-style: none;
+        font-weight: bold;
+        transition: all .2s ease;
+        border-radius: .3em;
+        cursor: pointer;
+    }
+
+        .list-item:hover {
+            background-color: #5bc0de;
+            color: #fff;
+        }
+
+    li:focus {
+        background-color: #5bc0de;
+        color: #fff;
+        outline: none;
+        border: none;
+    }
+
+    .title {
+        padding: .6em 1em;
+    }
+
+    .about-menu {
+        list-style: none;
+    }
+
+    aside {
+        border-right: 1px solid rgb(233, 232, 232);
+    }
+</style>
+
+
+<div class="d-flex rounded border p-lg-3 p-2 bg-light">
+    <aside class="d-flex flex-column px-2">
+        <p class="text-info m-0 title">ABOUT ME</p>
+        <ul class="p-0 about-menu text-secondary">
+            <li tabindex="1" onclick="PersonalInfo()" class="list-item mb-1">Personal information</li>
+            <li tabindex="2" onclick="LivingPlaces()" class="list-item">Living places</li>
+            <li tabindex="3" onclick="ContactInfo()" class="list-item">Contact information</li>
+            @if (Model.Me == true)
+            {
+                <li tabindex="4" class="p-4"><a class="btn btn-outline-info" asp-action="EditUserDetails" asp-route-id="@Model.UserId">Edit details</a></li>
+            }
+        </ul>
+    </aside>
+    <div>
+        <div class="d-flex flex-column">
+            <div class="flex-grow-1 px-3 " id="information">
+
+            </div>
+
+        </div>
+    </div>
+</div>
+

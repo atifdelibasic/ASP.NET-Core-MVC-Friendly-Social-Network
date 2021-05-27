@@ -1,0 +1,50 @@
+﻿@model UserVM
+@{
+    Layout = null;
+}
+
+
+@if (Model.Users != null && Model.Users.Count() > 0)
+{
+    @foreach (var user in Model.Users)
+    {
+        <div class="border p-3 mb-2 search-user-div">
+            <a asp-controller="UserProfile" asp-action="Index" asp-route-id="@user.Id" class="d-flex p-2 align-content-center">
+                <div class="d-flex flex-column justify-content-center">
+
+                    @if (user.ProfileImage != null)
+                    {
+                        <img src="data:image/*;base64,@(Convert.ToBase64String(user.ProfileImage))" class="image  ">
+                    }
+                    else
+                    {
+                        <img src="/avatar.png" class="image ">
+                    }
+                </div>
+
+            </a>
+            <div class="pl-lg-5 pl-2 search-main">
+                <a asp-controller="UserProfile" asp-action="Index" asp-route-id="@user.Id">
+                    <div class="text-secondary search-user-name">
+                        @user.FirstName @user.LastName
+                    </div>
+                </a>
+                <div id="@user.Id">
+
+
+                </div>
+            </div>
+            @if (!user.IsMe)
+            {
+                <script>
+                        ConnectBtnLoad(@user.Id);
+                </script>
+            }
+        </div>
+    }
+}
+@*else
+    {
+        <div>No results to show.</div>
+    }*@
+

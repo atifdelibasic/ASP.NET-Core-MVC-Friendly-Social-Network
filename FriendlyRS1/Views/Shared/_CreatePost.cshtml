@@ -1,0 +1,275 @@
+﻿@model UserDetailsVM
+
+@{
+    Layout = null;
+}
+
+<style>
+
+    .post {
+        width: 50%;
+        overflow: auto;
+    }
+
+    .create-post-text {
+        background-color: #eeeeee;
+        cursor: pointer;
+    }
+
+        .create-post-text:hover {
+            background-color: #e6e6e6;
+        }
+
+    .slika:hover {
+        opacity: .8;
+    }
+
+    .create-post-page {
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+    }
+
+    textarea {
+        overflow-y: scroll;
+        resize: none;
+    }
+</style>
+
+
+<div class="d-flex flex-column p-lg-2">
+    <div class="border bg-white shadow p-3 new-post d-flex align-items-center mb-3">
+        @if (Model.ProfileImage != null)
+        {
+            <a asp-controller="UserProfile" asp-action="Index">
+                <img src="data:image/*;base64,@(Convert.ToBase64String(Model.ProfileImage))" class="rounded-circle border-dark slika" style="height: 60px; width: 60px; background-size: cover; background-position: center;">
+            </a>
+        }
+        else
+        {
+            <img src="/avatar.png" class="rounded-circle border border-light profileImage" style="height: 50px; width: 50px; background-size: cover; background-position: center;">
+        }
+        <div class="px-3 w-100" data-toggle="modal" data-target="#exampleModal">
+            <p class="form-control rounded m-0 create-post-text">What's your next activity?</p>
+            <small class="text-info" style="font-weight:500">e.g. Someone interested in hiking this weekend?</small>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content p-2 bg-white" id="forma" name="forma">
+            <input type="text" name="Id" hidden id="PostId" value="0" />
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+
+            <div class="create-post-page p-2">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="text-info m-0">Create Post</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <hr style="width:100%;" />
+                <div class="form-group">
+                    <textarea name="PostText" id="PostText" class="form-control addPostInput" placeholder="e.g. Someone willing to play soccer this wednesday?" required></textarea>
+                </div>
+
+                <div class="form-group text-dark">
+                    <label>Your interests or hobby category:</label>
+                    <select class="form-control" asp-items="Model.HobbyCategories" onchange="LoadHobbies(this.value)" id="hobbiesCat">
+                        <option value="" selected disabled hidden>Choose category</option>
+                    </select>
+                </div>
+
+                <div class="form-group text-dark">
+                    <label>Your hobby or interest:</label>
+                    <select name="HobbyId" class="form-control" id="hobbies">
+                        <option value="">Choose hobby</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-info" onclick="LoadLocation()">
+                        Load location <i class="fas fa-map-marker-alt">
+                        </i>
+                    </button>
+                </div>
+                <span id="textMsg" style="color:red"></span>
+
+                <div id="info">
+
+                </div>
+                <hr style="width: 100%" />
+
+                <button type="button" class="btn btn-success" onclick="AddPost()" id="postSubmitBtn">Post</button>
+
+                <small class="text-secondary">HINT: By enabling location people near you will see your posts.</small>
+            </div>
+
+            <input type="text" name="Longitude" value="" id="long" hidden />
+            <input type="text" name="Latitude" value="" id="lat" hidden />
+            <input type="text" name="AuthorId" value="@Model.UserId" hidden />
+        </form>
+    </div>
+</div>
+
+
+<script>
+    let select = document.getElementById("hobbies");
+
+
+    function LoadHobbies(id, hobbyId = 0) {
+        if (id == null || id == 0)
+            return;
+        removeOptions();
+
+        var url = '/Feed/GetData/' + id;
+        select.disabled = true;
+
+        $.ajax({
+            dataType: "json",
+            type: 'GET',
+            url: url,
+            success: function (data) {
+                let arr = data.data;
+                if (arr.length > 0) {
+                    select.disabled = false;
+                }
+                for (var i = 0; i < arr.length; i++) {
+                    addOption(arr[i].title, arr[i].id, hobbyId);
+                }
+            }
+        })
+    }
+
+
+    function removeOptions() {
+        while (select.hasChildNodes()) {
+            select.removeChild(select.childNodes[0]);
+        }
+        addOption('Choose hobby', '');
+    }
+
+    function addOption(text, value, hobbyId) {
+        var option = document.createElement('option');
+        var optionText = document.createTextNode(text);
+
+        option.appendChild(optionText);
+        option.setAttribute('value', value);
+
+        select.appendChild(option);
+        if (value == hobbyId) {
+            option.selected = 'selected';
+        }
+    }
+
+
+    function LoadLocation() {
+        let long = document.getElementById("long");
+        let lat = document.getElementById("lat");
+        let alertWrapper = document.getElementById("info");
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                longTemp = position.coords.longitude;
+                latTemp = position.coords.latitude;
+
+                long.value = longTemp;
+                lat.value = latTemp;
+
+                alertWrapper.innerHTML += addAlert("Location successfully loaded!", "success");
+            });
+        } else {
+            alertWrapper.innerHTML += addAlert("Geolocation is not supported by this browser.", "warning");
+        }
+    }
+
+
+    function EraseInputFileds() {
+        let postText = $(".addPostInput");
+        postText.val('');
+    }
+
+    function AddPost() {
+
+        let form = $("#forma");
+
+        let url = '/Feed/AddPost';
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: form.serialize(),
+            success: function (res) {
+                let errors = res.msg;
+                console.log(errors);
+                let errorMsg = document.getElementById("textMsg");
+                errorMsg.innerHTML = "";
+                if (errors != undefined) {
+                    errors = errors.split("|");
+                    for (var i = 0; i < errors.length; i++) {
+                        errorMsg.innerHTML += errors[i] + "</br>";
+                    }
+                } else {
+                    //close modal
+                    $('#exampleModal').modal('hide');
+                    EraseInputFileds();
+                    if (res.id != undefined) {
+                        // update existing post
+                        UpdatePostUI(res);
+                    } else {
+                        // append new post
+                        let container1 = $("#profile-content");
+                        let container2 = $("#posts");
+                        container1.prepend(res);
+                        container2.prepend(res);
+                    }
+                }
+            }
+        });
+    }
+
+    function UpdatePostUI(model) {
+        let post = $("#post" + model.id);
+        let text = post.find('.post-text').find('p');
+        let title = post.find('.post-hobby').find('p');
+
+        text.html(model.postText);
+        title.html(model.hobbyTitle);
+
+        console.log(text.html());
+
+    }
+
+
+    function addAlert(text, alertType) {
+
+        var alert = `<div class="alert alert-${alertType} alert-dismissible fade show m-0" id="alert-warning">
+                   <span>${text}</span>
+                    <button class="close" data-dismiss="alert">×</button>
+                </div>`;
+
+        return alert;
+    }
+
+
+
+
+    $('#exampleModal').on('hidden.bs.modal', function () {
+        let postId = document.getElementById('PostId').value = 0;
+        let postText = document.getElementById('PostText').value = '';
+        let hobbiesCat = document.getElementById('hobbiesCat').value = '';
+        let hobbies = document.getElementById('hobbies').value = '';
+
+        removeOptions();
+    });
+
+    $(document).click(function (e) {
+        var container = $(".post-menu");
+        // if the target of the click isn't the container nor a descendant of the container
+        if (!container.is(e.target) && container.has(e.target).length === 0 && !e.target.classList.contains('three-dots')) {
+            container.hide();
+        }
+    });
+
+</script>
